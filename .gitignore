@@ -1,0 +1,8 @@
+*.o
+shell
+test
+delay
+*.out
+.vscode/
+*~
+*.swp

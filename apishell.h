@@ -21,4 +21,16 @@ void debug_args(char *args[], int argc);
 // corresponding to tokens
 void args_cleanup(char **args, int argc);
 
+// Add command to history
+void add_history(vector<string>& history, const string& cmd);
+
+// Display history
+void display_history(const vector<string>& history);
+
+// Get command from history by number or !!
+string get_history_command(const vector<string>& history, const string& input);
+
+// Maximum history entries
+#define MAX_HISTORY 10
+
 #endif

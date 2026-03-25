@@ -5,6 +5,7 @@
 #include <cstring>
 #include <unistd.h>
 #include <sys/types.h>
+#include <csignal>
 #include <sys/wait.h>
 #include "apishell.h"
 #include "circular_buffer.h"
@@ -20,6 +21,8 @@ int main()
     string delimiters = " \t\n";
     int should_run = 1;
 
+    signal(SIGCHLD, sigchld_handler);
+
     CircularBuffer history(MAX_HISTORY);
     
     while (should_run) {
@@ -34,7 +37,7 @@ int main()
             
             if (num_str == "!") {
                 if (history.back().empty()) {
-                    cout << "No such command in history" << endl;
+                    cout << "No such command in history." << endl;
                     continue;
                 }
             command_line = history.back();
@@ -45,19 +48,18 @@ int main()
                 size_t cmd_no = 0;
                 for (char c : num_str) {
                     if (!isdigit(c)) {
-                        cout << "No such command in history" << endl;
+                        cout << "No such command in history." << endl;
                         continue;
                     }
                     cmd_no = cmd_no * 10 + (c - '0');
                 }
                 if (history.get_cmd(cmd_no).empty()) {
-                    cout << "No command in history" << endl;
+                    cout << "No command in history." << endl;
                     continue;
                 }
                 command_line = history.get_cmd(cmd_no);;
                 cout << command_line << endl;
             } 
-            // Invalid !something
             else {
                 cout << "No such command in history." << endl;
                 continue;
@@ -76,19 +78,27 @@ int main()
         }
     
         if (tokens[0] == "exit") {
+            int zombies = check_for_zombies();
+            if (zombies > 0) {
+                cout << "Warning: Reaped " << zombies << " zombie process(es) on exit" << endl;
+            }
             should_run = 0;
+            continue;
+        }
+
+        if (tokens[0] == "checkzombies") {
+            int zombies = check_for_zombies();
+            if (zombies == 0) {
+                cout << "No zombie processes detected" << endl;
+            } else {
+                cout << "Reaped " << zombies << " zombie process(es)" << endl;
+            }
             continue;
         }
 
         history.add_cmd(command_line);
 
-        // 4. BACKGROUND CHECK
-        bool background = false;
-        if (!tokens.empty() && tokens.back() == "&") {
-            background = true;
-            tokens.pop_back();
-            if (tokens.empty()) continue;
-        }
+        bool is_bg = background(tokens);
 
         char **args = build_args(tokens);
         int argc = tokens.size();
@@ -106,20 +116,13 @@ int main()
             _exit(1);
         } else {
             // Parent process
-            if (!background) {
-                int status;
-                waitpid(pid, &status, 0);
+            if (!is_bg) {
+                waitpid(pid, nullptr, 0);
             } else {
+                cout << "Parent does not wait." << endl;
                 cout << "[background pid " << pid << "]" << endl;
             }
         }
-
-        // In main(), check argc/argv:
-        //if (argc > 1 && string(argc[1]) == "--test") {
-            // Run automated tests
-          //  run_tests();
-            //return 0;
-//}
 
         // Cleanup
         args_cleanup(args, argc);

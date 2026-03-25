@@ -3,13 +3,14 @@
 
 #include <vector>
 #include <string>
+#include <csignal>
 
 using namespace std;
 
 string handle_quotes(string s);
 
 // returns the tokens of string s as a vector of strings
-// using h=the delimters for splitting string s
+// using the delimters for splitting string s
 vector<string> tokenize(string s, string delimiters);
 
 // returns the args array, ready for use by the exec system calls,
@@ -19,8 +20,14 @@ char **build_args(const vector<string>& tokens);
 
 void debug_args(char *args[], int argc);
 
-// release memory that has been allocated to hold the args
-// corresponding to tokens
+bool background(vector<string>& tokens);
+
+// release memory that has been allocated to hold the args corresponding to tokens
 void args_cleanup(char **args, int argc);
+
+// SIGCHLD handler reaps background children
+void sigchld_handler(int sig);
+
+int check_for_zombies();
 
 #endif

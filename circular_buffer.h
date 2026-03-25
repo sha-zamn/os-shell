@@ -22,7 +22,6 @@ public:
         : capacity(max_capacity), in(0), out(0), count(0), total_added(0) {
         buffer.resize(capacity);
     }
-
     // add command, overwrite oldest if full
     void add_cmd(const string& cmd) {
         if (cmd.empty()) return;
@@ -51,7 +50,7 @@ public:
         return buffer[index];
     }
 
-    //Get most recent command
+    // Get most recent command
     string back() const {
         if (count == 0) return "";
         size_t index = ((in - 1) + capacity) % capacity;
@@ -80,13 +79,12 @@ public:
             cout << "No commands in history." << endl;
             return;
         }
+        cout << "[History is displayed from newest to oldest]" << endl;
 
-        // First displayed number = oldest stored command number
-        size_t start_num = total_added - count + 1;
-        
         for (size_t i = 0; i < count; i++) {
-            size_t index = (out + i) % capacity;
-            cout << (start_num + i) << " " << buffer[index] << endl;
+            size_t index = (in - 1 - i + capacity) % capacity;
+            size_t cmd_num = total_added - i;
+            cout << cmd_num << " " << buffer[index] << endl;
         }
     }
 

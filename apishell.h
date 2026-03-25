@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void handle_quotes(char *line);
+string handle_quotes(string s);
 
 // returns the tokens of string s as a vector of strings
 // using h=the delimters for splitting string s

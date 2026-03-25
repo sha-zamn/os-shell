@@ -34,7 +34,7 @@ int main()
             
             if (num_str == "!") {
                 if (history.back().empty()) {
-                    cout << "No command in history" << endl;
+                    cout << "No such command in history" << endl;
                     continue;
                 }
             command_line = history.back();
@@ -45,7 +45,7 @@ int main()
                 size_t cmd_no = 0;
                 for (char c : num_str) {
                     if (!isdigit(c)) {
-                        cout << "No command in history" << endl;
+                        cout << "No such command in history" << endl;
                         continue;
                     }
                     cmd_no = cmd_no * 10 + (c - '0');
@@ -87,6 +87,7 @@ int main()
         if (!tokens.empty() && tokens.back() == "&") {
             background = true;
             tokens.pop_back();
+            if (tokens.empty()) continue;
         }
 
         char **args = build_args(tokens);

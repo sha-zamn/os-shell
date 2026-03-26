@@ -113,3 +113,10 @@ int check_for_zombies() {
     
     return zombie_count;
 }
+//Manual zombie check:
+//pgrep apishell
+//ps -p <pid> -o pid,ppid,state,cmd
+
+//Manual memory leak check:
+//valgrind --leak-check=full --track-origins=yes ./apishell
+//valgrind --leak-check=full --track-origins=yes ./test

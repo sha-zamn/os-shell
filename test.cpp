@@ -77,6 +77,7 @@ int main() {
     // 5: Background test with &
     string cl5 = "./delay &";
     vector<string> cl_tokens5 = tokenize(cl5, delims);
+    background(cl_tokens5); // Remove & for building args
     cout << "\nTEST 5: Background execution with &" << endl;
     cout << "Input: \"" << cl5 << "\"" << endl;
     for (size_t i = 0; i < cl_tokens5.size(); i++)
@@ -123,7 +124,7 @@ int main() {
     cout << "!1 \"" << add_hist.get_cmd(1) << "\"" << endl;
     cout << "!3 \"" << add_hist.get_cmd(3) << "\"" << endl; //cmd1 was only read, not reexecuted
 
-    cout << "\nTEST 7.3: History !N error handling ===" << endl;
+    cout << "\nTEST 7.3: History !N error handling" << endl;
     cout << "!11 " << add_hist.get_cmd(11) << (add_hist.get_cmd(11).empty() ? " is not in buffer" : " still exists in buffer [Error]") << endl;
 
     return 0;

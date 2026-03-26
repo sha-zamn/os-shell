@@ -12,33 +12,18 @@ using namespace std;
 
 // Handle quoted strings by replacing quotes with \x01
 string handle_quotes(string s) {
-    char *buffer = new char[s.size() + 1];
-    strcpy(buffer, s.c_str());
-
-    char *src = buffer;
-    char *dst = buffer;
+    string result;
     bool in_quotes = false;
-
-    while (*src != '\0') {
-        if (*src == '"') {
+    for (char c : s) {
+        if (c == '"') {
             in_quotes = !in_quotes;
-            src++;  //skip the quote
-        } else if (*src == ' ' && in_quotes) {
-            *dst = '\x01';  //placeholder
-            dst++;
-            src++;
+            //skip the quote
+        } else if (c == ' ' && in_quotes) {
+            result += '\x01';  //placeholder
         } else {
-            *dst = *src;
-            dst++;
-            src++;
+            result += c;
         }
     }
-    *dst = '\0';  //null-terminate
-
-    // convert back to c++ string
-    string result(buffer);
-    delete[] buffer;
-
     return result;
 }
 
